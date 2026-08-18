@@ -1,112 +1,105 @@
 {
   "title": "Order processing architecture",
   "description": "Current synchronous checkout and proposed event-driven order processing.",
+  "question": "How does the proposed event flow remove payment latency from checkout?",
+  "audience": "Engineers and architecture reviewers",
+  "scope": "Order creation, payment authorization, order state, and the immediate API response",
   "nodes": [
     {
       "id": "customer",
       "name": "Customer",
       "icon": "desktop",
-      "description": "Submits an order and reads its status."
+      "summary": "Submits an order and reads its status.",
+      "status": "observed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Example actor" }]
     },
     {
       "id": "api",
       "name": "Order API",
       "icon": "server",
-      "description": "Validates the request and owns the public order contract."
+      "summary": "Owns the public order contract.",
+      "details": "POST /orders validates the request and returns the order identifier with its current status.",
+      "status": "observed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Example request boundary" }]
     },
     {
       "id": "orders",
       "name": "Order database",
       "icon": "storage",
-      "description": "Stores the authoritative order state."
+      "summary": "Stores the authoritative order state.",
+      "status": "observed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Example state owner" }]
     },
     {
       "id": "payments",
       "name": "Payment service",
       "icon": "server",
-      "description": "Authorizes payment and returns a payment result."
+      "summary": "Authorizes payment and returns a result.",
+      "status": "observed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Example external dependency" }]
     },
     {
       "id": "events",
       "name": "Order events",
       "icon": "queue",
-      "description": "Carries immutable order lifecycle events."
+      "summary": "Carries immutable order lifecycle events.",
+      "status": "proposed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed event boundary" }]
     },
     {
       "id": "processor",
       "name": "Order processor",
       "icon": "function-module",
-      "description": "Consumes order events, coordinates payment, and writes the next order state."
+      "summary": "Coordinates asynchronous payment processing.",
+      "details": "Consumes order-created events, authorizes payment, and writes the next order state.",
+      "status": "proposed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed worker" }]
     },
     {
       "id": "response",
       "name": "Order response",
       "icon": "document",
-      "description": "Returns the order identifier and current status."
+      "summary": "Returns the identifier and current status.",
+      "status": "observed",
+      "evidence": [{ "source": "examples/order-processing.json", "detail": "Example output contract" }]
     }
   ],
   "views": [
     {
       "id": "current",
-      "name": "1. Current synchronous flow",
+      "name": "Current synchronous flow",
+      "question": "Where does checkout wait today?",
       "description": "The API waits for payment before it stores and returns the order.",
-      "nodes": [
-        { "id": "customer", "x": -9, "y": 0 },
-        { "id": "api", "x": -3, "y": 0 },
-        { "id": "payments", "x": 3, "y": -3 },
-        { "id": "orders", "x": 3, "y": 3 },
-        { "id": "response", "x": 9, "y": 0 }
+      "groups": [
+        { "id": "request", "name": "Request path", "nodes": ["customer", "api"] },
+        { "id": "dependencies", "name": "Dependencies", "nodes": ["payments", "orders"] },
+        { "id": "output", "name": "Output", "nodes": ["response"] }
       ],
       "edges": [
-        { "id": "current-request", "from": "customer", "to": "api", "color": "service", "description": "Create order" },
-        { "id": "current-payment", "from": "api", "to": "payments", "color": "service", "description": "Synchronous authorization" },
-        { "id": "current-store", "from": "api", "to": "orders", "color": "fact", "description": "Store final state" },
-        { "id": "current-response", "from": "api", "to": "response", "color": "output", "description": "Return result" }
-      ],
-      "regions": [
-        { "id": "current-edge", "color": "service-region", "from": { "x": -11, "y": 2 }, "to": { "x": -1, "y": -2 } },
-        { "id": "current-data", "color": "source-region", "from": { "x": 1, "y": 5 }, "to": { "x": 5, "y": -5 } },
-        { "id": "current-output", "color": "output-region", "from": { "x": 7, "y": 2 }, "to": { "x": 11, "y": -2 } }
-      ],
-      "labels": [
-        { "id": "current-edge-label", "tile": { "x": -11, "y": 3 }, "content": "Request path" },
-        { "id": "current-data-label", "tile": { "x": 1, "y": 6 }, "content": "Dependencies" },
-        { "id": "current-output-label", "tile": { "x": 7, "y": 3 }, "content": "Output" }
+        { "id": "create", "from": "customer", "to": "api", "kind": "request", "label": "Create order", "contract": "POST /orders", "status": "observed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Current request" }] },
+        { "id": "authorize", "from": "api", "to": "payments", "kind": "request", "label": "Authorize payment synchronously", "status": "observed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Current blocking call" }] },
+        { "id": "store", "from": "api", "to": "orders", "kind": "data", "label": "Store final state", "status": "observed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Current write" }] },
+        { "id": "respond", "from": "api", "to": "response", "kind": "result", "label": "Return final result", "contract": "200 with order identifier and final status", "status": "observed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Current response" }] }
       ]
     },
     {
       "id": "proposed",
-      "name": "2. Proposed event-driven flow",
-      "description": "The API stores the order once, publishes an event, and returns without waiting for payment.",
-      "nodes": [
-        { "id": "customer", "x": -12, "y": 0 },
-        { "id": "api", "x": -6, "y": 0 },
-        { "id": "orders", "x": 0, "y": -3 },
-        { "id": "events", "x": 0, "y": 3 },
-        { "id": "processor", "x": 6, "y": 3 },
-        { "id": "payments", "x": 12, "y": 3 },
-        { "id": "response", "x": 6, "y": -3 }
+      "name": "Proposed event-driven flow",
+      "question": "How does checkout return before payment finishes?",
+      "description": "The API stores a pending order, publishes an event, and returns without waiting for payment.",
+      "groups": [
+        { "id": "request", "name": "Request path", "nodes": ["customer", "api"] },
+        { "id": "state", "name": "State and response", "nodes": ["orders", "response"] },
+        { "id": "async", "name": "Asynchronous processing", "nodes": ["events", "processor", "payments"] }
       ],
       "edges": [
-        { "id": "proposed-request", "from": "customer", "to": "api", "color": "service", "description": "Create order" },
-        { "id": "proposed-store", "from": "api", "to": "orders", "color": "fact", "description": "Store pending state" },
-        { "id": "proposed-publish", "from": "api", "to": "events", "color": "context", "description": "Publish order-created event" },
-        { "id": "proposed-consume", "from": "events", "to": "processor", "color": "source", "description": "Consume event" },
-        { "id": "proposed-payment", "from": "processor", "to": "payments", "color": "service", "description": "Authorize payment" },
-        { "id": "proposed-update", "from": "processor", "to": "orders", "color": "fact", "description": "Update order state" },
-        { "id": "proposed-response", "from": "api", "to": "response", "color": "output", "description": "Return accepted order" }
-      ],
-      "regions": [
-        { "id": "proposed-request-region", "color": "service-region", "from": { "x": -14, "y": 2 }, "to": { "x": -4, "y": -2 } },
-        { "id": "proposed-event-region", "color": "context-region", "from": { "x": -2, "y": 5 }, "to": { "x": 14, "y": 1 } },
-        { "id": "proposed-state-region", "color": "source-region", "from": { "x": -2, "y": -1 }, "to": { "x": 2, "y": -5 } },
-        { "id": "proposed-output-region", "color": "output-region", "from": { "x": 4, "y": -1 }, "to": { "x": 8, "y": -5 } }
-      ],
-      "labels": [
-        { "id": "proposed-request-label", "tile": { "x": -14, "y": 3 }, "content": "Request path" },
-        { "id": "proposed-event-label", "tile": { "x": -2, "y": 6 }, "content": "Asynchronous processing" },
-        { "id": "proposed-state-label", "tile": { "x": -2, "y": 0 }, "content": "State" },
-        { "id": "proposed-output-label", "tile": { "x": 4, "y": 0 }, "content": "Output" }
+        { "id": "create", "from": "customer", "to": "api", "kind": "request", "label": "Create order", "contract": "POST /orders", "status": "observed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Existing request" }] },
+        { "id": "store-pending", "from": "api", "to": "orders", "kind": "data", "label": "Store pending state", "status": "proposed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed write" }] },
+        { "id": "publish", "from": "api", "to": "events", "kind": "event", "label": "Publish order-created", "contract": "OrderCreated { orderId, customerId, amount }", "status": "proposed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed event" }] },
+        { "id": "consume", "from": "events", "to": "processor", "kind": "event", "label": "Consume order-created", "status": "proposed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed consumer" }] },
+        { "id": "authorize", "from": "processor", "to": "payments", "kind": "request", "label": "Authorize payment", "status": "proposed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed asynchronous call" }] },
+        { "id": "update", "from": "processor", "to": "orders", "kind": "data", "label": "Update order state", "status": "proposed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed state transition" }] },
+        { "id": "respond", "from": "api", "to": "response", "kind": "result", "label": "Return accepted order", "contract": "202 with order identifier and pending status", "status": "proposed", "evidence": [{ "source": "examples/order-processing.json", "detail": "Proposed immediate response" }] }
       ]
     }
   ]

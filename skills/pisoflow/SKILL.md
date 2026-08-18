@@ -1,8 +1,8 @@
 ---
 name: pisoflow
-description: Create interactive isometric Isoflow architecture explanations from code, services, event streams, databases, and data flows. Use when the user asks to visualize a system with Isoflow, explain architecture interactively, compare current and target flows, or identify active, legacy, and unused components.
+description: Create evidence-backed interactive isometric architecture explanations from code, services, event streams, databases, and data flows. Use when the user asks to visualize a system, explain architecture interactively, compare current and target flows, or identify active, legacy, and unused components.
 license: MIT
-compatibility: Requires Node.js 22.12 or newer, npm, and a browser. Uses Isoflow Community Edition under the MIT license.
+compatibility: Requires Node.js 22.12 or newer and a browser. Rendering is offline and does not require npm.
 ---
 
 # Pisoflow
@@ -11,55 +11,35 @@ Create the smallest interactive diagram that answers the user's question.
 
 ## Workflow
 
-1. Inspect the relevant code, configuration, and runtime entry points.
-2. Identify the runtime flow, source lineage, output contract, and migration state.
-3. Separate facts from assumptions. Mark a component as unused only when configuration and references prove it.
-4. Create as few views as needed, normally two to five:
-   - a small default overview
-   - current detailed runtime flow
-   - proposed runtime flow
-   - component decision or migration state
-   - future target when relevant
-5. Put exact component names and simplified queries or code in node descriptions.
-6. Keep visible node labels short.
-7. Mark every proposed interface or parameter contract explicitly.
-8. Add regions, headings, a legend, meaningful edge descriptions, and more than color to distinguish flow types.
-9. Write the diagram source as JSON that follows [references/schema.md](references/schema.md).
-10. Render and open it from the package root:
+1. Identify the decision, audience, and system boundary. Ask one question only when the answer changes the diagram.
+2. Inspect relevant entry points, configuration, contracts, and runtime evidence. Stop at the stated boundary.
+3. Separate observed facts, inferences, proposals, legacy paths, unused parts, and unknowns. Attach source evidence to each node and flow.
+4. Create one view by default. Add a view only when it answers a different question, such as current versus proposed behavior.
+5. Keep canvas summaries short. Put exact component names, contracts, simplified code, and queries in details.
+6. Write semantic JSON that follows [references/schema.md](references/schema.md). Do not choose coordinates, colors, line styles, region bounds, or legend entries.
+7. Write the source to a temporary file outside the inspected repository.
+8. Resolve this skill's directory from the loaded `SKILL.md` path, then render with Node:
 
 ```bash
-npm run render -- <diagram.json> --output=<name> --open
+node <pisoflow-skill-directory>/scripts/render.mjs <absolute-diagram.json> --output=<name> --open
 ```
 
-The renderer creates a unique directory below `~/.agent/diagrams/pisoflow/`. It does not accept an arbitrary output path.
-
-## Setup
-
-From the package root, run:
-
-```bash
-npm ci
-```
+The renderer creates a unique directory below `~/.agent/diagrams/pisoflow/`. Delete the temporary source after a successful render.
 
 ## Modeling rules
 
 - Use one node for one responsibility.
-- Use one edge for one meaningful data or control transfer.
-- Do not show framework internals unless they explain the decision.
-- Use `context` for shared request context.
-- Use `fact` for active calculation.
-- Use `source` for source events and persisted data.
-- Use `unused` only for confirmed unused or removable components.
-- Use `warning` for legacy, parallel, or candidate components.
-- Put simple queries or code in descriptions, not in visible labels.
-- Keep raw fact domains separate.
-- Show request-time and precomputed paths in separate views.
-- State freshness, watermark, and historical-read behavior when they affect correctness.
+- Use one edge for one meaningful data, event, request, control, or result transfer.
+- Use groups for deployment zones, ownership boundaries, runtime stages, or other meaningful lanes.
+- Use exact names from evidence. Do not invent an implementation name.
+- Mark `observed` only when source or runtime evidence supports the claim.
+- Use `inferred` when evidence supports a conclusion but does not prove it.
+- Mark every proposed interface and parameter contract explicitly.
+- Use `unused` only when references and configuration prove removal is safe.
+- State freshness, watermark, failure behavior, and historical-read behavior when they affect correctness.
 - State the exact condition required before a legacy component can be removed.
-- Keep the default overview below approximately seven nodes.
-- Keep detailed views below approximately 20 nodes.
-- Ensure the text alternative explains every canvas view.
+- Keep an overview below approximately seven nodes and a detailed view below approximately 20 nodes.
 
 ## Result
 
-Return the generated `index.html` path and a short list of views. State any component whose usage remains uncertain. Tell the user that node details contain simplified code and that the text alternative is below the canvas.
+Return the generated `index.html` path and a short list of views. State unresolved unknowns. Tell the user that accessible view controls and component details are beside the canvas, and the complete searchable text alternative is below it.

@@ -1,0 +1,19 @@
+{
+  "tolerance": 4,
+  "desktop": {
+    "zoom": { "minimum": 45, "maximum": 55 },
+    "boxes": {
+      "tabs": { "x": 0, "width": 1440 },
+      "canvas": { "x": 0, "width": 1100, "height": 680 },
+      "inspector": { "x": 1100, "width": 340 }
+    }
+  },
+  "mobile": {
+    "zoom": { "minimum": 15, "maximum": 25 },
+    "boxes": {
+      "tabs": { "x": 0, "width": 375 },
+      "canvas": { "x": 0, "width": 375, "height": 422 },
+      "inspector": { "x": 0, "width": 375 }
+    }
+  }
+}
