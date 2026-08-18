@@ -1,0 +1,221 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f8fafc;
+  color: #172033;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+header {
+  display: flex;
+  min-height: 150px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 20px 28px;
+  border-bottom: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: 24px;
+}
+
+header p {
+  margin-bottom: 6px;
+}
+
+.view-list {
+  color: #475569;
+  font-size: 13px;
+}
+
+.legend {
+  display: grid;
+  min-width: 360px;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 10px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.line {
+  display: inline-block;
+  width: 42px;
+  border-top-width: 4px;
+}
+
+.line.solid {
+  border-top-style: solid;
+}
+
+.line.dashed {
+  border-top-style: dashed;
+}
+
+.line.dotted {
+  border-top-style: dotted;
+}
+
+.line.context {
+  border-color: #0077b6;
+}
+
+.line.fact {
+  border-color: #2d6a4f;
+}
+
+.line.source {
+  border-color: #b45309;
+}
+
+.line.service {
+  border-color: #6d28d9;
+}
+
+.line.output {
+  border-color: #047857;
+}
+
+.line.warning {
+  border-color: #b91c1c;
+}
+
+main {
+  width: 100%;
+  height: calc(100vh - 150px);
+  min-height: 620px;
+  border-bottom: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.text-alternative {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px 28px 64px;
+}
+
+.search-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 650;
+}
+
+input[type="search"] {
+  width: min(100%, 520px);
+  margin-bottom: 24px;
+  padding: 10px 12px;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #172033;
+  font: inherit;
+}
+
+.text-alternative > details {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.model-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.model-list details {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+pre {
+  overflow-x: auto;
+  margin: 10px 0 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #172033;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+footer {
+  padding: 24px 28px 48px;
+  border-top: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+footer details {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th,
+td {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #e2e8f0;
+}
+
+@media (max-width: 900px) {
+  header {
+    display: block;
+  }
+
+  .legend {
+    min-width: 0;
+    margin-top: 18px;
+  }
+
+  main {
+    height: 70vh;
+  }
+}

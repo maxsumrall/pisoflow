@@ -1,0 +1,47 @@
+GSAP Software License Agreement
+
+Source: https://gsap.com/community/standard-license/
+Effective date: April 30, 2025
+Last modified date: May 30, 2025
+Retrieved: August 18, 2026
+Copyright (c) 2025, Webflow
+
+I. DEFINITIONS
+
+“GSAP License” means the terms and conditions of this GSAP Software License Agreement.
+
+“GSAP Products” means any Software made available at gsap.com or any successor sites, including but not limited to the GSAP animation library and related plugins, tools, or extensions.
+
+“Permitted Uses” means the implementation and/or use of GSAP Products on any website, web application, or digital interface by any person or entity, which may include companies that compete with Webflow in other areas of business.
+
+“Prohibited Uses” means any implementation and/or use of GSAP Products in tools that allow users to build visual animations without code that encourages, induces, or materially assists in creating a solution that competes with Webflow’s visual animation building capabilities.
+
+“Competitive Products” means any software, tool, or service that enables users to create, edit, or manage animations through a visual interface or builder similar to Webflow.
+
+II. GRANT OF LICENSE
+
+Subject to the terms and conditions of this GSAP License, Webflow grants you a non-exclusive, worldwide license to use, reproduce, display, and implement GSAP Products solely for Permitted Uses.
+
+III. RESTRICTIONS
+
+You may not:
+
+1. Use any GSAP Products for any Prohibited Uses without prior written consent;
+2. Reverse engineer any GSAP Products for the purpose of creating Competitive Products;
+3. Remove or alter any proprietary notices or branding from GSAP Products.
+
+IV. OWNERSHIP AND INTELLECTUAL PROPERTY
+
+All intellectual property rights in GSAP Products, including but not limited to copyright, patents, trademarks, and trade secrets, remain the exclusive property of Webflow. This GSAP License does not transfer any ownership rights in GSAP Products to you.
+
+V. TERMINATION
+
+Webflow may terminate this GSAP License and revoke your access in its discretion if you fail to comply with any of these terms and conditions. Upon termination, you must cease all use of GSAP Products and destroy all copies in your possession.
+
+VI. MISCELLANEOUS PROVISIONS
+
+1. General: This GSAP License is incorporated into and subject to Webflow’s Terms of Service available at https://webflow.com/legal/terms. In the event of any conflict or inconsistency between this GSAP License and the Terms of Service, the terms of this GSAP License shall govern in relation to your use of any GSAP Products.
+
+2. Amendments: Webflow reserves the right to update or modify this GSAP License at any time by posting the revised terms on its website, provided that any such updates or modifications shall not result in any material degradation to the security, integrity, or functionality of any GSAP Products. Your continued use of any GSAP Products after revisions constitutes acceptance of the revised GSAP License. If you do not accept the revised GSAP License, you are prohibited from using versions of GSAP Products released after the effective date of the revised GSAP License, as well as updates made to previous versions. You may continue using previous versions under the applicable terms licensed to you before the effective date, excluding updates made to those versions.
+
+3. No Waiver: Failure of Webflow to enforce any provision of this GSAP License shall not constitute a waiver of future enforcement of that or any other provision.

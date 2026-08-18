@@ -1,0 +1,14 @@
+{
+  "name": "react-quill",
+  "version": "2.0.0-pisoflow.1",
+  "type": "module",
+  "license": "MIT",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./dist/quill.snow.css": "./dist/quill.snow.css"
+  },
+  "peerDependencies": {
+    "react": ">=17"
+  }
+}

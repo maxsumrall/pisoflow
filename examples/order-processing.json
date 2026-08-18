@@ -1,0 +1,113 @@
+{
+  "title": "Order processing architecture",
+  "description": "Current synchronous checkout and proposed event-driven order processing.",
+  "nodes": [
+    {
+      "id": "customer",
+      "name": "Customer",
+      "icon": "desktop",
+      "description": "Submits an order and reads its status."
+    },
+    {
+      "id": "api",
+      "name": "Order API",
+      "icon": "server",
+      "description": "Validates the request and owns the public order contract."
+    },
+    {
+      "id": "orders",
+      "name": "Order database",
+      "icon": "storage",
+      "description": "Stores the authoritative order state."
+    },
+    {
+      "id": "payments",
+      "name": "Payment service",
+      "icon": "server",
+      "description": "Authorizes payment and returns a payment result."
+    },
+    {
+      "id": "events",
+      "name": "Order events",
+      "icon": "queue",
+      "description": "Carries immutable order lifecycle events."
+    },
+    {
+      "id": "processor",
+      "name": "Order processor",
+      "icon": "function-module",
+      "description": "Consumes order events, coordinates payment, and writes the next order state."
+    },
+    {
+      "id": "response",
+      "name": "Order response",
+      "icon": "document",
+      "description": "Returns the order identifier and current status."
+    }
+  ],
+  "views": [
+    {
+      "id": "current",
+      "name": "1. Current synchronous flow",
+      "description": "The API waits for payment before it stores and returns the order.",
+      "nodes": [
+        { "id": "customer", "x": -9, "y": 0 },
+        { "id": "api", "x": -3, "y": 0 },
+        { "id": "payments", "x": 3, "y": -3 },
+        { "id": "orders", "x": 3, "y": 3 },
+        { "id": "response", "x": 9, "y": 0 }
+      ],
+      "edges": [
+        { "id": "current-request", "from": "customer", "to": "api", "color": "service", "description": "Create order" },
+        { "id": "current-payment", "from": "api", "to": "payments", "color": "service", "description": "Synchronous authorization" },
+        { "id": "current-store", "from": "api", "to": "orders", "color": "fact", "description": "Store final state" },
+        { "id": "current-response", "from": "api", "to": "response", "color": "output", "description": "Return result" }
+      ],
+      "regions": [
+        { "id": "current-edge", "color": "service-region", "from": { "x": -11, "y": 2 }, "to": { "x": -1, "y": -2 } },
+        { "id": "current-data", "color": "source-region", "from": { "x": 1, "y": 5 }, "to": { "x": 5, "y": -5 } },
+        { "id": "current-output", "color": "output-region", "from": { "x": 7, "y": 2 }, "to": { "x": 11, "y": -2 } }
+      ],
+      "labels": [
+        { "id": "current-edge-label", "tile": { "x": -11, "y": 3 }, "content": "Request path" },
+        { "id": "current-data-label", "tile": { "x": 1, "y": 6 }, "content": "Dependencies" },
+        { "id": "current-output-label", "tile": { "x": 7, "y": 3 }, "content": "Output" }
+      ]
+    },
+    {
+      "id": "proposed",
+      "name": "2. Proposed event-driven flow",
+      "description": "The API stores the order once, publishes an event, and returns without waiting for payment.",
+      "nodes": [
+        { "id": "customer", "x": -12, "y": 0 },
+        { "id": "api", "x": -6, "y": 0 },
+        { "id": "orders", "x": 0, "y": -3 },
+        { "id": "events", "x": 0, "y": 3 },
+        { "id": "processor", "x": 6, "y": 3 },
+        { "id": "payments", "x": 12, "y": 3 },
+        { "id": "response", "x": 6, "y": -3 }
+      ],
+      "edges": [
+        { "id": "proposed-request", "from": "customer", "to": "api", "color": "service", "description": "Create order" },
+        { "id": "proposed-store", "from": "api", "to": "orders", "color": "fact", "description": "Store pending state" },
+        { "id": "proposed-publish", "from": "api", "to": "events", "color": "context", "description": "Publish order-created event" },
+        { "id": "proposed-consume", "from": "events", "to": "processor", "color": "source", "description": "Consume event" },
+        { "id": "proposed-payment", "from": "processor", "to": "payments", "color": "service", "description": "Authorize payment" },
+        { "id": "proposed-update", "from": "processor", "to": "orders", "color": "fact", "description": "Update order state" },
+        { "id": "proposed-response", "from": "api", "to": "response", "color": "output", "description": "Return accepted order" }
+      ],
+      "regions": [
+        { "id": "proposed-request-region", "color": "service-region", "from": { "x": -14, "y": 2 }, "to": { "x": -4, "y": -2 } },
+        { "id": "proposed-event-region", "color": "context-region", "from": { "x": -2, "y": 5 }, "to": { "x": 14, "y": 1 } },
+        { "id": "proposed-state-region", "color": "source-region", "from": { "x": -2, "y": -1 }, "to": { "x": 2, "y": -5 } },
+        { "id": "proposed-output-region", "color": "output-region", "from": { "x": 4, "y": -1 }, "to": { "x": 8, "y": -5 } }
+      ],
+      "labels": [
+        { "id": "proposed-request-label", "tile": { "x": -14, "y": 3 }, "content": "Request path" },
+        { "id": "proposed-event-label", "tile": { "x": -2, "y": 6 }, "content": "Asynchronous processing" },
+        { "id": "proposed-state-label", "tile": { "x": -2, "y": 0 }, "content": "State" },
+        { "id": "proposed-output-label", "tile": { "x": 4, "y": 0 }, "content": "Output" }
+      ]
+    }
+  ]
+}
