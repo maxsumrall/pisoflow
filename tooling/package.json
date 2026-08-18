@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",
-    "@playwright/test": "1.55.1",
+    "@playwright/test": "1.62.1",
     "@vitejs/plugin-react": "6.0.5",
     "vite": "8.2.1",
     "vite-plugin-singlefile": "2.3.3"
